@@ -1,0 +1,14 @@
+{
+  "name": "backend-for-bbd",
+  "version": "0.0.0",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "private": true,
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.0",
+    "express": "^4.17.3",
+    "formidable": "^2.0.1"
+  }
+}
