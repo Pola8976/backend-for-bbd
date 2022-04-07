@@ -2,13 +2,15 @@
   "name": "backend-for-bbd",
   "version": "0.0.0",
   "scripts": {
-    "start": "node app.js"
+    "start": "nodemon app"
   },
   "private": true,
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.0.0",
+    "elliptic": "^6.5.4",
     "express": "^4.17.3",
     "formidable": "^2.0.1"
   }
 }
+
