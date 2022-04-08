@@ -38,13 +38,13 @@ router.post('/upload', (req, res) => {
 
   const form = new formidable.IncomingForm();
   form.parse(req, function (err, fields, files) {
-    console.log(files);
     for (const [fileId, file] of Object.entries(files)) {
       console.log(fileId);
       const fileType = fileId.split('-')[1];
       let oldPath = file.filepath;
       let newPath = path.join(tempDirPath, fileType, file.originalFilename);
       if (fileType == 'key') keyName = file.originalFilename;
+      console.log(keyName);
       let rawData = fs.readFileSync(oldPath);
       fs.writeFileSync(newPath, rawData, function (err) {
         if (err) console.log(err);
@@ -55,10 +55,18 @@ router.post('/upload', (req, res) => {
       patientObj = JSON.parse(field);
       console.log(patientObj);
     }
+
+    const key = fs.readFileSync(path.join(tempDirPath, 'key', keyName));
+    let filesInFolder = fs.readdirSync(path.join(tempDirPath, 'csv'));
   });
 
-  // const key = fs.readFileSync(path.join(__dirname, 'uploads', 'key', keyName));
-  // const tx = new Transaction();
+  // files = files.concat(fs.readdirSync(path.join(tempDirPath, 'images')));
+
+  // console.log(files);
+
+  // files.forEach(file => {
+  //   console.log('File:', file);
+  // });
 
   // return res.send('Successfully uploaded');
 });

@@ -11,6 +11,11 @@
     "elliptic": "^6.5.4",
     "express": "^4.17.3",
     "formidable": "^2.0.1"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "upload/*, temp-key-storage/*"
+    ]
   }
 }
 
