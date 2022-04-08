@@ -10,7 +10,7 @@ const path = require('path');
 const fs = require('fs');
 const { type } = require('express/lib/response');
 const EC = require('elliptic').ec;
-import { Transaction, Block, Blockchain } from './blockchain';
+const { Transaction, Block, Blockchain } = require('./blockchain');
 
 const ec = new EC('secp256k1');
 const blockchainInstance = new Blockchain();
@@ -25,37 +25,40 @@ const genRandomNumber = () =>
       parseInt(process.env.TEMP_DIR_MIN)
   )}`;
 
-router.post('/upload/*', (req, res) => {
-  // const tempDirName = genRandomNumber();
-  // const tempDirPath = path.join(__dirname, 'uploads', tempDirName);
-  // const types = ['key', 'csv', 'images'];
+router.post('/upload', (req, res) => {
+  const tempDirName = genRandomNumber();
+  const tempDirPath = path.join(__dirname, 'uploads', tempDirName);
+  const types = ['key', 'csv', 'images'];
 
-  // for (const type of types) {
-  //   fs.mkdirSync(path.join(tempDirPath, type), { recursive: true }, err => {
-  //     if (err) throw err;
-  //   });
-  // }
+  for (const type of types) {
+    fs.mkdirSync(path.join(tempDirPath, type), { recursive: true }, err => {
+      if (err) throw err;
+    });
+  }
 
   const form = new formidable.IncomingForm();
   form.parse(req, function (err, fields, files) {
-    for (const file of Object.values(files)) {
+    console.log(files);
+    for (const [fileId, file] of Object.entries(files)) {
+      console.log(fileId);
+      const fileType = fileId.split('-')[1];
       let oldPath = file.filepath;
-      let newPath = path.join(
-        __dirname,
-        'uploads',
-        req.url.split('/')[2],
-        file.originalFilename
-      );
-      if (req.url.split('/')[2] == 'key') keyName = file.originalFilename;
+      let newPath = path.join(tempDirPath, fileType, file.originalFilename);
+      if (fileType == 'key') keyName = file.originalFilename;
       let rawData = fs.readFileSync(oldPath);
       fs.writeFileSync(newPath, rawData, function (err) {
         if (err) console.log(err);
       });
     }
+
+    for (const field of Object.values(fields)) {
+      patientObj = JSON.parse(field);
+      console.log(patientObj);
+    }
   });
 
-  const key = fs.readFileSync(path.join(__dirname, 'uploads', 'key', keyName));
-  const tx = new Transaction();
+  // const key = fs.readFileSync(path.join(__dirname, 'uploads', 'key', keyName));
+  // const tx = new Transaction();
 
   // return res.send('Successfully uploaded');
 });
