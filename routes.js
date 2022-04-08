@@ -13,7 +13,36 @@ const EC = require('elliptic').ec;
 const { Transaction, Block, Blockchain } = require('./blockchain');
 
 const ec = new EC('secp256k1');
-const blockchainInstance = new Blockchain();
+let blockchainInstance = new Blockchain();
+const textFilepath = './blockchain.txt'
+
+//Retrieve Blockchain from Text File
+
+try {
+  if (fs.existsSync(textFilepath)) {
+    console.log('Yes blockchain.txt exists')
+    const data = fs.readFileSync('./blockchain.txt',{encoding:'utf8', flag:'r'});
+    console.log(data);
+    blockchainInstance = JSON.parse(data);
+    console.log(blockchainInstance);
+  }
+  else{
+    console.log('No blockchain.txt does not exist')
+    fs.writeFileSync(
+      path.join('./', 'blockchain.txt'),
+      JSON.stringify(blockchainInstance),
+      err => {
+        if (err) throw err;
+      }
+    );
+  }
+} catch(err) {
+  console.error(err)
+}
+
+// const data = fs.readFileSync('./input.txt',
+//             {encoding:'utf8', flag:'r'});
+
 let keyName;
 dotenv.config();
 
