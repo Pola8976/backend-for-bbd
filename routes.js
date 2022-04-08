@@ -10,8 +10,11 @@ const path = require('path');
 const fs = require('fs');
 const { type } = require('express/lib/response');
 const EC = require('elliptic').ec;
+import { Transaction, Block, Blockchain } from './blockchain';
 
 const ec = new EC('secp256k1');
+const blockchainInstance = new Blockchain();
+let keyName;
 dotenv.config();
 
 const genRandomNumber = () =>
@@ -43,12 +46,17 @@ router.post('/upload/*', (req, res) => {
         req.url.split('/')[2],
         file.originalFilename
       );
+      if (req.url.split('/')[2] == 'key') keyName = file.originalFilename;
       let rawData = fs.readFileSync(oldPath);
       fs.writeFileSync(newPath, rawData, function (err) {
         if (err) console.log(err);
       });
     }
   });
+
+  const key = fs.readFileSync(path.join(__dirname, 'uploads', 'key', keyName));
+  const tx = new Transaction();
+
   // return res.send('Successfully uploaded');
 });
 
