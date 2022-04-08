@@ -6,11 +6,12 @@
   },
   "private": true,
   "dependencies": {
+    "blob": "^0.1.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.0",
     "elliptic": "^6.5.4",
     "express": "^4.17.3",
-    "formidable": "^2.0.1"
+    "formidable": "^2.0.1",
+    "node-blob": "^0.0.2"
   }
 }
-

@@ -1,0 +1,1 @@
+{"chain":[{"prevHash":1640995200000,"timestamp":[],"transactions":"0","nonce":0,"hash":"14d9a5abc7a45584a93643768fa0e107d7861d083d0fe70b5e2be4adfcee2576add065b6957db13ccd54e575f2d4bdd5d9741b7b31e471d2e0ce5209561cc546"}],"numZeros":2,"pendingTransactions":[]}
