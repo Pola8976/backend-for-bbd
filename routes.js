@@ -14,20 +14,22 @@ const { Transaction, Block, Blockchain } = require('./blockchain');
 
 const ec = new EC('secp256k1');
 let blockchainInstance = new Blockchain();
-const textFilepath = './blockchain.txt'
+const textFilepath = './blockchain.txt';
 
 //Retrieve Blockchain from Text File
 
 try {
   if (fs.existsSync(textFilepath)) {
-    console.log('Yes blockchain.txt exists')
-    const data = fs.readFileSync('./blockchain.txt',{encoding:'utf8', flag:'r'});
+    console.log('Yes blockchain.txt exists');
+    const data = fs.readFileSync('./blockchain.txt', {
+      encoding: 'utf8',
+      flag: 'r',
+    });
     console.log(data);
     blockchainInstance = JSON.parse(data);
     console.log(blockchainInstance);
-  }
-  else{
-    console.log('No blockchain.txt does not exist')
+  } else {
+    console.log('No blockchain.txt does not exist');
     fs.writeFileSync(
       path.join('./', 'blockchain.txt'),
       JSON.stringify(blockchainInstance),
@@ -36,8 +38,8 @@ try {
       }
     );
   }
-} catch(err) {
-  console.error(err)
+} catch (err) {
+  console.error(err);
 }
 
 // const data = fs.readFileSync('./input.txt',
@@ -70,6 +72,7 @@ router.post('/upload', (req, res) => {
     for (const [fileId, file] of Object.entries(files)) {
       console.log(fileId);
       const fileType = fileId.split('-')[1];
+      console.log(fileId.split('-'));
       let oldPath = file.filepath;
       let newPath = path.join(tempDirPath, fileType, file.originalFilename);
       if (fileType == 'key') keyName = file.originalFilename;
@@ -85,24 +88,43 @@ router.post('/upload', (req, res) => {
       console.log(patientObj);
     }
 
-    const key = fs.readFileSync(path.join(tempDirPath, 'key', keyName));
-    let filesInFolder = fs.readdirSync(path.join(tempDirPath, 'csv'));
+    const key = ec.keyFromPrivate(
+      fs.readFileSync(path.join(tempDirPath, 'key', keyName))
+    );
+    const filesInFolders = [];
+    const folderNames = ['csv', 'images'];
+    for (const folderName in folderNames)
+      filesInFolders.append(fs.readdirSync(path.join(tempDirPath, folderName)));
+    console.log(key.getPublic('hex'));
+
+    // filesInFolders.forEach((filesInFolder, i) => {
+    //   for (const fileName in filesInFolder) {
+    //     const tx = new Transaction(
+    //       folderNames,
+    //       path.join(tempDirPath, folderNames[i], fileName),
+    //       key.getPublic('hex'),
+    //       patientObj
+    //     );
+
+    //     tx.signTransaction(key);
+
+    //     blockchainInstance.addTransaction(tx);
+    //   }
+    // });
+
+    filesInFolders.forEach((filesInFolder, i) => {
+      console.log(filesInFolder, i);
+    });
+
+    blockchainInstance.minePendingTransactions();
+    console.log(blockchainInstance);
   });
-
-  // files = files.concat(fs.readdirSync(path.join(tempDirPath, 'images')));
-
-  // console.log(files);
-
-  // files.forEach(file => {
-  //   console.log('File:', file);
-  // });
 
   // return res.send('Successfully uploaded');
 });
 
 router.get('/dummy-keys', (req, res) => {
   const key = ec.genKeyPair();
-  // res.set('Content-Disposition', 'attachment');
   console.log(key);
   console.log(key.getPublic('hex'));
   console.log(key.getPrivate('hex'));

@@ -6,13 +6,19 @@ const { path } = require('express/lib/application');
 const ec = new EC('secp256k1');
 
 class Transaction {
-  constructor(dataType, dataPath, address) {
+  constructor(dataType, dataPath, address, { pid, fullName, gender, dob }) {
     this.dataType = dataType;
     this.dataPath = dataPath;
     this.data = fs.readFileSync(dataPath);
     this.address = address;
+    this.patient = {
+      pid,
+      fullName,
+      gender,
+      dob,
+    };
 
-    moveTransactedData();
+    // moveTransactedData();
   }
 
   moveTransactedData() {
@@ -109,7 +115,7 @@ class Blockchain {
     return this.chain[this.chain.length - 1];
   }
 
-  minePendingTransactions(miningRewardAddress) {
+  minePendingTransactions() {
     const block = new Block(
       this.getLatestBlock().hash,
       Date.now(),
@@ -117,7 +123,7 @@ class Blockchain {
     );
     block.mineBlock(this.numZeros);
 
-    debug('Block successfully mined!');
+    console.log('Block successfully mined!');
     this.chain.push(block);
 
     this.pendingTransactions = [];
@@ -125,7 +131,7 @@ class Blockchain {
 
   addTransaction(transaction) {
     if (!transaction.address) {
-      throw new Error('Transaction must include from and to address');
+      throw new Error('Transaction must include address');
     }
 
     if (!transaction.isValid()) {

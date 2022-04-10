@@ -13,5 +13,11 @@
     "express": "^4.17.3",
     "formidable": "^2.0.1",
     "node-blob": "^0.0.2"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "uploads/*",
+      "temp-key-storage/*"
+    ]
   }
 }
