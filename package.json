@@ -17,7 +17,8 @@
   "nodemonConfig": {
     "ignore": [
       "uploads/*",
-      "temp-key-storage/*"
+      "temp-key-storage/*",
+      "blockchain.txt"
     ]
   }
 }

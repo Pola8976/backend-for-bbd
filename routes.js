@@ -21,7 +21,7 @@ const textFilepath = './blockchain.txt';
 try {
   if (fs.existsSync(textFilepath)) {
     console.log('Yes blockchain.txt exists');
-    const data = fs.readFileSync('./blockchain.txt', {
+    const data = fs.readFileSync('blockchain.txt', {
       encoding: 'utf8',
       flag: 'r',
     });
@@ -31,7 +31,7 @@ try {
   } else {
     console.log('No blockchain.txt does not exist');
     fs.writeFileSync(
-      path.join('./', 'blockchain.txt'),
+      path.join(__dirname, 'blockchain.txt'),
       JSON.stringify(blockchainInstance),
       err => {
         if (err) throw err;
@@ -75,6 +75,7 @@ router.post('/upload', (req, res) => {
       console.log(fileId.split('-'));
       let oldPath = file.filepath;
       let newPath = path.join(tempDirPath, fileType, file.originalFilename);
+      console.log(newPath);
       if (fileType == 'key') keyName = file.originalFilename;
       console.log(keyName);
       let rawData = fs.readFileSync(oldPath);
@@ -97,20 +98,20 @@ router.post('/upload', (req, res) => {
       filesInFolders.append(fs.readdirSync(path.join(tempDirPath, folderName)));
     console.log(key.getPublic('hex'));
 
-    // filesInFolders.forEach((filesInFolder, i) => {
-    //   for (const fileName in filesInFolder) {
-    //     const tx = new Transaction(
-    //       folderNames,
-    //       path.join(tempDirPath, folderNames[i], fileName),
-    //       key.getPublic('hex'),
-    //       patientObj
-    //     );
+    filesInFolders.forEach((filesInFolder, i) => {
+      for (const fileName in filesInFolder) {
+        const tx = new Transaction(
+          folderNames,
+          path.join(tempDirPath, folderNames[i], fileName),
+          key.getPublic('hex'),
+          patientObj
+        );
 
-    //     tx.signTransaction(key);
+        tx.signTransaction(key);
 
-    //     blockchainInstance.addTransaction(tx);
-    //   }
-    // });
+        blockchainInstance.addTransaction(tx);
+      }
+    });
 
     filesInFolders.forEach((filesInFolder, i) => {
       console.log(filesInFolder, i);
