@@ -13,7 +13,11 @@ const EC = require('elliptic').ec;
 const { Transaction, Block, Blockchain } = require('./blockchain');
 
 const ec = new EC('secp256k1');
-let blockchainInstance = new Blockchain();
+let blockchainInstance = new Blockchain({
+  chain: [],
+  pendingTransactions: [],
+  numZeros: 2,
+});
 const textFilepath = './blockchain.txt';
 
 //Retrieve Blockchain from Text File
@@ -26,7 +30,7 @@ try {
       flag: 'r',
     });
     console.log(data);
-    blockchainInstance = JSON.parse(data);
+    blockchainInstance = new Blockchain(JSON.parse(data));
     console.log(blockchainInstance);
   } else {
     console.log('No blockchain.txt does not exist');
@@ -82,6 +86,7 @@ router.post('/upload', (req, res) => {
       fs.writeFileSync(newPath, rawData, function (err) {
         if (err) console.log(err);
       });
+      console.log(fs.existsSync(newPath), newPath);
     }
 
     for (const field of Object.values(fields)) {
@@ -94,12 +99,13 @@ router.post('/upload', (req, res) => {
     );
     const filesInFolders = [];
     const folderNames = ['csv', 'images'];
-    for (const folderName in folderNames)
-      filesInFolders.append(fs.readdirSync(path.join(tempDirPath, folderName)));
+    for (const folderName of folderNames) {
+      filesInFolders.push(fs.readdirSync(path.join(tempDirPath, folderName)));
+    }
     console.log(key.getPublic('hex'));
 
-    filesInFolders.forEach((filesInFolder, i) => {
-      for (const fileName in filesInFolder) {
+    for (let i = 0; i < filesInFolders.length; i++) {
+      for (const fileName of filesInFolders[i]) {
         const tx = new Transaction(
           folderNames,
           path.join(tempDirPath, folderNames[i], fileName),
@@ -107,17 +113,20 @@ router.post('/upload', (req, res) => {
           patientObj
         );
 
+        console.log('signing tx');
         tx.signTransaction(key);
 
-        blockchainInstance.addTransaction(tx);
+        console.log(blockchainInstance);
+        console.log(Blockchain);
+        blockchainInstance.addTx(tx);
       }
-    });
+    }
 
     filesInFolders.forEach((filesInFolder, i) => {
       console.log(filesInFolder, i);
     });
 
-    blockchainInstance.minePendingTransactions();
+    // blockchainInstance.minePendingTransactions();
     console.log(blockchainInstance);
   });
 

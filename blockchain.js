@@ -47,6 +47,8 @@ class Transaction {
     const hashTx = this.calculateHash();
     const sig = signingKey.sign(hashTx, 'base64');
     this.signature = sig.toDER('hex');
+
+    console.log('tx signed');
   }
 
   isValid() {
@@ -101,10 +103,16 @@ class Block {
 }
 
 class Blockchain {
-  constructor() {
-    this.chain = [this.createGenesisBlock()];
-    this.numZeros = 2;
-    this.pendingTransactions = [];
+  // constructor() {
+  //   this.chain = [this.createGenesisBlock()];
+  //   this.numZeros = 2;
+  //   this.pendingTransactions = [];
+  // }
+
+  constructor({ chain, numZeros, pendingTransactions }) {
+    this.chain = chain;
+    this.numZeros = numZeros;
+    this.pendingTransactions = pendingTransactions;
   }
 
   createGenesisBlock() {
@@ -129,7 +137,7 @@ class Blockchain {
     this.pendingTransactions = [];
   }
 
-  addTransaction(transaction) {
+  addTx(transaction) {
     if (!transaction.address) {
       throw new Error('Transaction must include address');
     }
@@ -143,7 +151,7 @@ class Blockchain {
     );
 
     this.pendingTransactions.push(transaction);
-    debug('transaction added: %s', transaction);
+    console.log('transaction added: %s', transaction);
   }
 
   getAllTransactionsForWallet(address) {
@@ -157,7 +165,7 @@ class Blockchain {
       }
     }
 
-    debug('get transactions for wallet count: %s', txs.length);
+    console.log(`get transactions for wallet count: ${txs.length}`);
     return txs;
   }
 
