@@ -7,10 +7,11 @@ const ec = new EC('secp256k1');
 
 class Transaction {
   constructor(dataType, dataPath, address, { pid, fullName, gender, dob }) {
+    this.address = address;
+    this.timestamp = Date.now();
     this.dataType = dataType;
     this.dataPath = dataPath;
     this.data = fs.readFileSync(dataPath);
-    this.address = address;
     this.patient = {
       pid,
       fullName,
@@ -21,12 +22,12 @@ class Transaction {
     // moveTransactedData();
   }
 
-  moveTransactedData() {
-    let newPath = this.dataPath.split('/');
-    newPath.splice(newPath.length - 2, 0, 'transacted');
-    newPath.join();
-    fs.rename(this.dataPath, path.join());
-  }
+  // moveTransactedData() {
+  //   let newPath = this.dataPath.split('/');
+  //   newPath.splice(newPath.length - 2, 0, 'transacted');
+  //   newPath.join();
+  //   fs.rename(this.dataPath, path.join());
+  // }
 
   calculateHash() {
     return crypto
@@ -34,7 +35,10 @@ class Transaction {
       .update(
         this.address +
           this.timestamp +
-          crypto.createHash('sha512').update(this.data)
+          this.dataType +
+          this.dataPath +
+          this.data +
+          JSON.stringify(this.patient)
       )
       .digest('hex');
   }
@@ -83,9 +87,7 @@ class Block {
   }
 
   mineBlock(numZeros) {
-    while (
-      this.hash.substring(0, difficulty) !== Array(difficulty + 1).join('0')
-    ) {
+    while (this.hash.substring(0, numZeros) !== Array(numZeros + 1).join('0')) {
       this.nonce++;
       this.hash = this.calculateHash();
     }
@@ -109,14 +111,18 @@ class Blockchain {
   //   this.pendingTransactions = [];
   // }
 
-  constructor({ chain, numZeros, pendingTransactions }) {
-    this.chain = chain;
+  constructor({ chain, numZeros, pendingTransactions }, blkExists) {
+    this.chain = blkExists ? chain : [this.createGenesisBlock()];
+    console.log(this.chain, blkExists);
+    // this.chain = chain;
     this.numZeros = numZeros;
     this.pendingTransactions = pendingTransactions;
   }
 
   createGenesisBlock() {
-    return new Block(Date.parse('2022-01-01'), [], '0');
+    const genBlk = new Block(Date.parse('2022-01-01'), [], '0');
+    console.log('genesis trigg', genBlk);
+    return genBlk;
   }
 
   getLatestBlock() {

@@ -13,12 +13,16 @@ const EC = require('elliptic').ec;
 const { Transaction, Block, Blockchain } = require('./blockchain');
 
 const ec = new EC('secp256k1');
-let blockchainInstance = new Blockchain({
-  chain: [],
-  pendingTransactions: [],
-  numZeros: 2,
-});
-const textFilepath = './blockchain.txt';
+let blockchainInstance = new Blockchain(
+  {
+    chain: [],
+    pendingTransactions: [],
+    numZeros: 2,
+  },
+  false
+);
+console.log(blockchainInstance);
+const textFilepath = path.join('blockchain.txt');
 
 //Retrieve Blockchain from Text File
 
@@ -29,11 +33,10 @@ try {
       encoding: 'utf8',
       flag: 'r',
     });
-    console.log(data);
-    blockchainInstance = new Blockchain(JSON.parse(data));
-    console.log(blockchainInstance);
+    blockchainInstance = new Blockchain(JSON.parse(data), true);
   } else {
     console.log('No blockchain.txt does not exist');
+    console.log(blockchainInstance);
     fs.writeFileSync(
       path.join(__dirname, 'blockchain.txt'),
       JSON.stringify(blockchainInstance),
@@ -76,17 +79,16 @@ router.post('/upload', (req, res) => {
     for (const [fileId, file] of Object.entries(files)) {
       console.log(fileId);
       const fileType = fileId.split('-')[1];
-      console.log(fileId.split('-'));
       let oldPath = file.filepath;
       let newPath = path.join(tempDirPath, fileType, file.originalFilename);
-      console.log(newPath);
-      if (fileType == 'key') keyName = file.originalFilename;
-      console.log(keyName);
+      if (fileType == 'key') {
+        keyName = file.originalFilename;
+        console.log(keyName);
+      }
       let rawData = fs.readFileSync(oldPath);
       fs.writeFileSync(newPath, rawData, function (err) {
         if (err) console.log(err);
       });
-      console.log(fs.existsSync(newPath), newPath);
     }
 
     for (const field of Object.values(fields)) {
@@ -102,7 +104,6 @@ router.post('/upload', (req, res) => {
     for (const folderName of folderNames) {
       filesInFolders.push(fs.readdirSync(path.join(tempDirPath, folderName)));
     }
-    console.log(key.getPublic('hex'));
 
     for (let i = 0; i < filesInFolders.length; i++) {
       for (const fileName of filesInFolders[i]) {
@@ -116,21 +117,22 @@ router.post('/upload', (req, res) => {
         console.log('signing tx');
         tx.signTransaction(key);
 
-        console.log(blockchainInstance);
-        console.log(Blockchain);
+        console.log('adding tx');
         blockchainInstance.addTx(tx);
       }
     }
 
-    filesInFolders.forEach((filesInFolder, i) => {
-      console.log(filesInFolder, i);
-    });
-
-    // blockchainInstance.minePendingTransactions();
-    console.log(blockchainInstance);
+    blockchainInstance.minePendingTransactions();
+    fs.writeFileSync(
+      path.join(__dirname, 'blockchain.txt'),
+      JSON.stringify(blockchainInstance),
+      err => {
+        if (err) throw err;
+      }
+    );
   });
 
-  // return res.send('Successfully uploaded');
+  return res.send('Operation successful');
 });
 
 router.get('/dummy-keys', (req, res) => {
