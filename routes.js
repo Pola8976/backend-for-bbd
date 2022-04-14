@@ -108,7 +108,7 @@ router.post('/upload', (req, res) => {
     for (let i = 0; i < filesInFolders.length; i++) {
       for (const fileName of filesInFolders[i]) {
         const tx = new Transaction(
-          folderNames,
+          folderNames[i],
           path.join(tempDirPath, folderNames[i], fileName),
           key.getPublic('hex'),
           patientObj
@@ -133,6 +133,10 @@ router.post('/upload', (req, res) => {
   });
 
   return res.send('Operation successful');
+});
+
+router.post('/chain', (req, res) => {
+  res.send(blockchainInstance.chain);
 });
 
 router.get('/dummy-keys', (req, res) => {

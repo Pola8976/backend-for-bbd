@@ -114,7 +114,6 @@ class Blockchain {
   constructor({ chain, numZeros, pendingTransactions }, blkExists) {
     this.chain = blkExists ? chain : [this.createGenesisBlock()];
     console.log(this.chain, blkExists);
-    // this.chain = chain;
     this.numZeros = numZeros;
     this.pendingTransactions = pendingTransactions;
   }
