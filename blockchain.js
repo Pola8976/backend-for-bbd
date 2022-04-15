@@ -119,7 +119,7 @@ class Blockchain {
   }
 
   createGenesisBlock() {
-    const genBlk = new Block(Date.parse('2022-01-01'), [], '0');
+    const genBlk = new Block(0, Date.parse('2022-01-01'), []);
     console.log('genesis trigg', genBlk);
     return genBlk;
   }
