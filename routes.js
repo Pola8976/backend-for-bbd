@@ -228,14 +228,36 @@ router.get('/temp-key-storage/*', (req, res) => {
 });
 
 router.post('/run-model', (req, res) => {
-  const python = spawn('python', ['python/model.py']);
-  python.stdout.on('data', function (data) {
-    console.log('Pipe data from python script ...');
-    dataToSend = data.toString();
-    console.log(dataToSend);
+  const tempDirName = genRandomNumber();
+  const tempDirPath = path.join(__dirname, 'to-predict', tempDirName);
+  let completeFilePath;
+
+  fs.mkdirSync(path.join(tempDirPath), err => {
+    if (err) throw err;
   });
-  python.on('close', code => {
-    console.log(`child process close all stdio with code ${code}`);
+
+  const form = new formidable.IncomingForm();
+  form.parse(req, function (err, fields, files) {
+    for (const [fileId, file] of Object.entries(files)) {
+      console.log(fileId);
+      let oldPath = file.filepath;
+      completeFilePath = path.join(tempDirPath, file.originalFilename);
+      let rawData = fs.readFileSync(oldPath);
+      fs.writeFileSync(completeFilePath, rawData, function (err) {
+        if (err) console.log(err);
+      });
+    }
+
+    const python = spawn('python', ['python/model.py', completeFilePath]);
+    python.stdout.on('data', function (data) {
+      console.log('Pipe data from python script ...');
+      const dataToSend = data.toString();
+      console.log(dataToSend);
+      res.send(dataToSend);
+    });
+    python.on('close', code => {
+      console.log(`child process close all stdio with code ${code}`);
+    });
   });
 });
 
