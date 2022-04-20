@@ -107,6 +107,7 @@ dist
 # Media directories
 uploads/*
 temp-key-storage/*
+to-predict/*
 
 # Blockchain
 blockchain.txt

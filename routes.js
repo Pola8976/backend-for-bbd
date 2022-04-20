@@ -11,6 +11,7 @@ const fs = require('fs');
 const { type } = require('express/lib/response');
 const EC = require('elliptic').ec;
 const { Transaction, Block, Blockchain } = require('./blockchain');
+const { spawn } = require('child_process');
 
 const ec = new EC('secp256k1');
 let blockchainInstance = new Blockchain(
@@ -224,6 +225,18 @@ router.get('/dummy-keys', (req, res) => {
 router.get('/temp-key-storage/*', (req, res) => {
   console.log(path.join(__dirname, req.url.substring(1)));
   res.sendFile(path.join(__dirname, req.url.substring(1)));
+});
+
+router.post('/run-model', (req, res) => {
+  const python = spawn('python', ['python/model.py']);
+  python.stdout.on('data', function (data) {
+    console.log('Pipe data from python script ...');
+    dataToSend = data.toString();
+    console.log(dataToSend);
+  });
+  python.on('close', code => {
+    console.log(`child process close all stdio with code ${code}`);
+  });
 });
 
 module.exports = router;

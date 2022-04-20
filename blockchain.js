@@ -105,12 +105,6 @@ class Block {
 }
 
 class Blockchain {
-  // constructor() {
-  //   this.chain = [this.createGenesisBlock()];
-  //   this.numZeros = 2;
-  //   this.pendingTransactions = [];
-  // }
-
   constructor({ chain, numZeros, pendingTransactions }, blkExists) {
     this.chain = blkExists ? chain : [this.createGenesisBlock()];
     console.log(this.chain, blkExists);
