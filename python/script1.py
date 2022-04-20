@@ -1,5 +1,0 @@
-'''
-Test
-'''
-
-print("Hello World")
