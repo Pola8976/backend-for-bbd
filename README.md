@@ -2,6 +2,10 @@
 
 Back-end for [Blockchain for Big Data](https://github.com/Pola8976/blockchain-for-big-data)
 
+## Its frontend
+
+This is the project's backend. It is designed to respond to https://github.com/Pola8976/blockchain-for-big-data.
+
 ## Initialization
 
 To limit the size of this repo, some items have been ignored. However, these are still are required for proper functioning of this project.
