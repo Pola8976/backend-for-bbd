@@ -5,7 +5,7 @@ import cv2
 import numpy as np
 import os
 
-model = keras.models.load_model('./model/')
+model = keras.models.load_model('python/model')
 
 model.compile(loss='binary_crossentropy', optimizer='rmsprop', metrics=['accuracy'])
 image_path = sys.argv[1]

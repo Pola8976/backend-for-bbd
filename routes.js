@@ -228,9 +228,10 @@ router.get('/temp-key-storage/*', (req, res) => {
 });
 
 router.post('/run-model', (req, res) => {
+  console.log('in run model');
   const tempDirName = genRandomNumber();
   const tempDirPath = path.join(__dirname, 'to-predict', tempDirName);
-  let completeFilePath;
+  const completeFilePath = path.join(tempDirPath, 'toPred.jpg');
 
   fs.mkdirSync(path.join(tempDirPath), err => {
     if (err) throw err;
@@ -238,26 +239,25 @@ router.post('/run-model', (req, res) => {
 
   const form = new formidable.IncomingForm();
   form.parse(req, function (err, fields, files) {
-    for (const [fileId, file] of Object.entries(files)) {
-      console.log(fileId);
-      let oldPath = file.filepath;
-      completeFilePath = path.join(tempDirPath, file.originalFilename);
-      let rawData = fs.readFileSync(oldPath);
-      fs.writeFileSync(completeFilePath, rawData, function (err) {
-        if (err) console.log(err);
-      });
-    }
+    const imgBuf = Buffer.from(JSON.parse(fields['data-image']).data, 'base64');
+    console.log(imgBuf);
+    fs.writeFileSync(completeFilePath, imgBuf, function (err) {
+      if (err) console.log(err);
+    });
+  });
 
-    const python = spawn('python', ['python/model.py', completeFilePath]);
-    python.stdout.on('data', function (data) {
-      console.log('Pipe data from python script ...');
-      const dataToSend = data.toString();
-      console.log(dataToSend);
-      res.send(dataToSend);
-    });
-    python.on('close', code => {
-      console.log(`child process close all stdio with code ${code}`);
-    });
+  const python = spawn('./python/venv/Scripts/python.exe', [
+    'python/prediction.py',
+    completeFilePath,
+  ]);
+  python.stdout.on('data', function (data) {
+    console.log('Pipe data from python script ...');
+    const dataToSend = data.toString();
+    console.log(dataToSend);
+    res.send(dataToSend);
+  });
+  python.on('close', code => {
+    console.log(`child process close all stdio with code ${code}`);
   });
 });
 

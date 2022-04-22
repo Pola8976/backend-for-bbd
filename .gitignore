@@ -108,6 +108,7 @@ dist
 uploads/*
 temp-key-storage/*
 to-predict/*
+python/venv/*
 
 # Blockchain
 blockchain.txt
