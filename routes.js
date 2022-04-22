@@ -1,10 +1,6 @@
 const express = require('express');
 const router = express.Router();
-// const mysql = require('mysql');
-// const bcrypt = require('bcryptjs');
-// const nodemailer = require('nodemailer');
 const dotenv = require('dotenv');
-// const jwt = require('jsonwebtoken');
 const formidable = require('formidable');
 const path = require('path');
 const fs = require('fs');
@@ -24,8 +20,6 @@ let blockchainInstance = new Blockchain(
 );
 console.log(blockchainInstance);
 const textFilepath = path.join('blockchain.txt');
-
-//Retrieve Blockchain from Text File
 
 try {
   if (fs.existsSync(textFilepath)) {
@@ -49,9 +43,6 @@ try {
 } catch (err) {
   console.error(err);
 }
-
-// const data = fs.readFileSync('./input.txt',
-//             {encoding:'utf8', flag:'r'});
 
 let keyName;
 dotenv.config();
@@ -216,10 +207,6 @@ router.get('/dummy-keys', (req, res) => {
       </body>
     <html>
   `);
-
-  // fs.unlink(tempDirPath, err => {
-  //   if (err) throw err;
-  // });
 });
 
 router.get('/temp-key-storage/*', (req, res) => {

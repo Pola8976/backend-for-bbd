@@ -18,16 +18,7 @@ class Transaction {
       gender,
       dob,
     };
-
-    // moveTransactedData();
   }
-
-  // moveTransactedData() {
-  //   let newPath = this.dataPath.split('/');
-  //   newPath.splice(newPath.length - 2, 0, 'transacted');
-  //   newPath.join();
-  //   fs.rename(this.dataPath, path.join());
-  // }
 
   calculateHash() {
     return crypto
